@@ -1,0 +1,28 @@
+{
+ "address": "1JFuiZvpL9NKoggbW6M5GWeZWoucNvRLTX",
+ "address_index": 56227524,
+ "background-color": "#ffffff",
+ "cloneable": true,
+ "description": "This tool will help you hide the Donation message. If required, it is also possible to reactivate the message.",
+ "files": {
+  "index.html": {
+   "sha512": "d03545adaa6b5ae768c75781f44c017379cd21087c796fe47a99bc4cceb9d572",
+   "size": 5678
+  },
+  "js/ZeroFrame.js": {
+   "sha512": "76a24d167e8a4c45f7d1b315efe31e4b4ccb19efef011c080994c94045ff4c93",
+   "size": 5088
+  }
+ },
+ "ignore": "",
+ "inner_path": "content.json",
+ "modified": 1648065199,
+ "postmessage_nonce_security": true,
+ "signers_sign": "HLcRV2euM5CXJ/GyfhmAPwY/Wm3S11IuCJ3pJEVzN6QUTGb0meinLL6aL5hR2A1MWUenmtfbtbaWj3VSCm4C5LA=",
+ "signs": {"1JFuiZvpL9NKoggbW6M5GWeZWoucNvRLTX": "G/nInBX57cg2sxgH4OcXtrzMSGox79V1wr8gHv8um+bWQaKukm/o4HIdmRBW/RZDA60EoRnxM/yLCgu2Bre1ua0="},
+ "signs_required": 1,
+ "title": "Disable donation message",
+ "translate": ["js/all.js"],
+ "viewport": "width=device-width, initial-scale=1.0",
+ "zeronet_version": "0.7.8"
+}

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        
+        <title>Disable donation message</title>
+        <base href="" target="_top" id="base">
+        <script>base.href = document.location.href.replace("/media", "").replace("index.html", "").replace(/[&?]wrapper=False/, "").replace(/[&?]wrapper_nonce=[A-Za-z0-9]+/, "")</script>
+    </head>
+    <body>
+
+        <div>
+            <h1>Disable donation message</h1>
+            <p>
+                This tool will help you hide the Donate message. If required,
+                it is also possible to reactivate the message.<br>
+                The message is implemented as a "plugin". This program will try
+                to find the appropriate plugin and activate or deactivate it.
+                To do this, click on the corresponding buttons.<br>
+                The tool requires admin permissions to activate and deactivate
+                the plugin. Except for enabling or disabling the plugin as
+                desired, the permissions are not used. This is also verifiable
+                in the source code.
+            </p>
+            <p>
+                If you have a comment or discover an error, please feel free to
+                write to me at <a href="mailto:m.k@mk16.de">m.k@mk16.de</a>. <br>
+                Sometimes it is necessary to restart Zeronet before the changes
+                take effect.
+            </p>
+            <p>
+                The program comes without any guarantee. Use is at your own risk.
+            </p>
+            <button onclick="grantAdmin();">Grant admin permissions</button>
+            <button onclick="checkAdmin(enableMessage);">Try enabling the donation message</button>
+            <button onclick="checkAdmin(disableMessage);">Try disabling the donation message</button>
+        </div>
+
+        <script src="js/ZeroFrame.js"></script>
+
+        <script>
+
+            zf = new ZeroFrame();
+            
+            function grantAdmin() {
+                zf.cmd("siteInfo", [], siteInfo => {
+                    if(siteInfo.settings.permissions.indexOf("ADMIN") > -1) {
+                        zf.cmd("wrapperNotification", ["done", "Admin permissions have already been granted."]);
+                    } else {
+                        zf.cmd("wrapperPermissionAdd", ["ADMIN"], () => {
+                            location.reload();
+                        });
+                    }
+                });
+            }
+            
+            function checkAdmin(func) {
+                zf.cmd("siteInfo", [], siteInfo => {
+                    if(siteInfo.settings.permissions.indexOf("ADMIN") > -1) {
+                        func();
+                    } else {
+                        zf.cmd("wrapperNotification", ["info", "Admin permissions are required to enable/disable the plugin."]);
+                    }
+                });
+            }
+            
+            function isMessagePlugin(plugin) {
+                return plugin.name.includes("DonationMessage");
+            }
+            
+            function changeMessageStatus(status) {
+                zf.cmd("pluginList", [], res => {
+                    var pot = res.plugins.filter(isMessagePlugin).filter(plugin => { return (status ? ! plugin.enabled : plugin.enabled ); });
+                    if (pot.length === 0) {
+                        zf.cmd("wrapperNotification", ["done", "No corresponding plugins could be found. It seems as if the message was already disabled."]);
+                    } else if (pot.length === 1) {
+                        setEnabledPlugin(pot[0], status);
+                    } else {
+                        var text = "I found " + pot.length + " possible plugins: ";
+                        for (var i = 0; i < pot.length; i++) {
+                            text += (i + 1) + " = " + pot[i].name + "; ";
+                        }
+                        zf.cmd("wrapperNotification", ["info", text]);
+                        zf.cmd("wrapperPrompt", ["Which should be selected?", "text"], input => {
+                            var pluginNumber = parseInt(input);
+                            if (isNaN(pluginNumber)) {
+                                zf.cmd("wrapperNotification", ["error", "The entered number could not be interpreted."]);
+                            } else if (pluginNumber < 1) {
+                                zf.cmd("wrapperNotification", ["error", "The number entered is too small."]);
+                            } else if (pluginNumber > pot.length) {
+                                zf.cmd("wrapperNotification", ["error", "The number entered is too big."]);
+                            } else {
+                                setEnabledPlugin(pot[pluginNumber - 1], status);
+                            }
+                        });
+                    }
+                });
+            }
+            
+            function disableMessage() {
+                changeMessageStatus(false);
+            }
+            
+            function enableMessage() {
+                changeMessageStatus(true);
+            }
+            
+            function setEnabledPlugin(plugin, is_enabled) {
+                zf.cmd("pluginConfigSet", [plugin.source, plugin.inner_path, "enabled", is_enabled], res => {
+                    if (res === "ok") {
+                        zf.cmd("wrapperNotification", ["done", "Plugin " + plugin.name + " " + (is_enabled ? "enabled" : "disabled") + "."]);
+                    } else {
+                        zf.cmd("wrapperNotification", ["error", "Failed to disable plugin " + plugin.name + "."]);
+                    }
+                });
+            }
+
+        </script>
+
+    </body>
+</html>
